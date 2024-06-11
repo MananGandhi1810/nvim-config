@@ -427,6 +427,12 @@ require('lazy').setup({
       -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
       { 'folke/neodev.nvim', opts = {} },
+
+      { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
+      { 'neovim/nvim-lspconfig' },
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'hrsh7th/nvim-cmp' },
+      { 'L3MON4D3/LuaSnip' },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -458,6 +464,42 @@ require('lazy').setup({
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
+
+      local lsp_zero = require 'lsp-zero'
+
+      lsp_zero.on_attach(function(client, bufnr)
+        -- see :help lsp-zero-keybindings
+        -- to learn the available actions
+        lsp_zero.default_keymaps { buffer = bufnr }
+      end)
+
+      -- to learn how to use mason.nvim
+      -- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guide/integrate-with-mason-nvim.md
+      require('mason').setup {}
+      require('mason-lspconfig').setup {
+        ensure_installed = {
+          'lua_ls',
+          'cssls',
+          'html',
+          'tsserver',
+          'jsonls',
+          'tailwindcss',
+          'eslint',
+          'prismals',
+          'gopls',
+          'bashls',
+          'astro',
+          'yamlls',
+          'dockerls',
+          'ast_grep',
+        },
+        handlers = {
+          function(server_name)
+            require('lspconfig')[server_name].setup {}
+          end,
+        },
+      }
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -737,7 +779,8 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
