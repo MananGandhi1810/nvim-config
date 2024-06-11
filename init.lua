@@ -412,6 +412,27 @@ require('lazy').setup({
     { 'akinsho/toggleterm.nvim', version = '*', config = true },
   },
 
+  {
+
+    'm4xshen/autoclose.nvim',
+    config = function()
+      require('autoclose').setup()
+    end,
+  },
+
+  {
+    '0x00-ketsu/autosave.nvim',
+    -- lazy-loading on events
+    event = { 'InsertLeave', 'TextChanged' },
+    config = function()
+      require('autosave').setup {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    end,
+  },
+  {},
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -779,7 +800,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<CR>'] = cmp.mapping.confirm { select = true },
+          -- ['<CR>'] = cmp.mapping.confirm { select = true },
           ['<Tab>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
